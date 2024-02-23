@@ -28,7 +28,7 @@ func info() BattlesnakeInfoResponse {
 	return BattlesnakeInfoResponse{
 		APIVersion: "1",
 		Author:     "BumbleBee", // TODO: Your Battlesnake username
-		Color:      "#9c27b0",   // TODO: Choose color
+		Color:      "#eeff41",   // TODO: Choose color
 		Head:       "bee",       // TODO: Choose head
 		Tail:       "ladybug",   // TODO: Choose tail
 	}
@@ -64,16 +64,26 @@ func move(state GameState) BattlesnakeMoveResponse {
 	boardWidth := state.Board.Width
 	boardHeight := state.Board.Height
 
-	if myNeck.X < myHead.X || state.You.Head.X-1 == 0 { // Neck is left of head, don't move left
+	if myNeck.X < myHead.X { // Neck is left of head, don't move left
 		isMoveSafe["left"] = false
 
-	} else if myNeck.X > myHead.X || state.You.Head.X+1 == boardWidth { // Neck is right of head, don't move right
+	} else if myNeck.X > myHead.X { // Neck is right of head, don't move right
 		isMoveSafe["right"] = false
 
-	} else if myNeck.Y < myHead.Y || state.You.Head.Y-1 == 0 { // Neck is below head, don't move down
+	} else if myNeck.Y < myHead.Y { // Neck is below head, don't move down
 		isMoveSafe["down"] = false
 
-	} else if myNeck.Y > myHead.Y || state.You.Head.Y+1 == boardHeight { // Neck is above head, don't move up
+	} else if myNeck.Y > myHead.Y { // Neck is above head, don't move up
+		isMoveSafe["up"] = false
+	}
+
+	if state.You.Head.X-1 == 0 {
+		isMoveSafe["left"] = false
+	} else if state.You.Head.X+1 == boardWidth {
+		isMoveSafe["right"] = false
+	} else if state.You.Head.Y-1 == 0 { // Neck is below head, don't move down
+		isMoveSafe["down"] = false
+	} else if state.You.Head.Y+1 == boardHeight { // Neck is above head, don't move up
 		isMoveSafe["up"] = false
 	}
 
@@ -117,9 +127,9 @@ func move(state GameState) BattlesnakeMoveResponse {
 
 func getDirection(d Coord) string {
 	switch {
-	case d.X == 0 && d.Y == -1:
-		return "up"
 	case d.X == 0 && d.Y == 1:
+		return "up"
+	case d.X == 0 && d.Y == -1:
 		return "down"
 	case d.X == -1 && d.Y == 0:
 		return "left"
