@@ -120,6 +120,13 @@ func move(state GameState) BattlesnakeMoveResponse {
 		return BattlesnakeMoveResponse{Move: "down"}
 	}
 
+	isMoveSafe = checkOpponentMoves(state, isMoveSafe)
+	for move, isSafe := range isMoveSafe {
+		if isSafe && !slices.Contains(safeMoves, move) {
+			safeMoves = append(safeMoves, move)
+		}
+	}
+
 	access := false
 	for !access {
 		if !slices.Contains(safeMoves, nextMove) {
@@ -180,58 +187,38 @@ func findFood(current Coord, targets []Coord) Coord {
 	return closest
 }
 
-//func checkBody(state GameState, body []Coord, isMoveSafe map[string]bool) map[string]bool {
-//	headX := state.You.Head.X
-//	headY := state.You.Head.Y
-//	myLength := len(state.You.Body)
-//
-//	for _, part := range body {
-//		if part.X == headX-1 && part.Y == headY {
-//			isMoveSafe["left"] = false
-//		}
-//		if part.X == headX+1 && part.Y == headY {
-//			isMoveSafe["right"] = false
-//		}
-//		if part.Y == headY-1 && part.X == headX {
-//			isMoveSafe["down"] = false
-//		}
-//		if part.Y == headY+1 && part.X == headX {
-//			isMoveSafe["up"] = false
-//		}
-//	}
-//
-//	for _, snake := range state.Board.Snakes {
-//		if snake.ID == state.You.ID {
-//			continue
-//		}
-//		opponentLength := len(snake.Body)
-//
-//		if myLength <= opponentLength {
-//			possibleMoves := []Coord{
-//				{X: snake.Head.X + 1, Y: snake.Head.Y}, // right
-//				{X: snake.Head.X - 1, Y: snake.Head.Y}, // left
-//				{X: snake.Head.X, Y: snake.Head.Y + 1}, // up
-//				{X: snake.Head.X, Y: snake.Head.Y - 1}, // down
-//			}
-//
-//			for _, move := range possibleMoves {
-//				if move.X == headX && move.Y == headY {
-//					if snake.Head.X < headX {
-//						isMoveSafe["right"] = false
-//					} else if snake.Head.X > headX {
-//						isMoveSafe["left"] = false
-//					} else if snake.Head.Y < headY {
-//						isMoveSafe["up"] = false
-//					} else if snake.Head.Y > headY {
-//						isMoveSafe["down"] = false
-//					}
-//				}
-//			}
-//		}
-//	}
-//
-//	return isMoveSafe
-//}
+func checkOpponentMoves(state GameState, isMoveSafe map[string]bool) map[string]bool {
+	headX := state.You.Head.X
+	headY := state.You.Head.Y
+	myLength := len(state.You.Body)
+
+	for _, snake := range state.Board.Snakes {
+		if snake.ID == state.You.ID {
+			continue // Пропускаем свою змею
+		}
+
+		opponentLength := len(snake.Body)
+		if myLength <= opponentLength {
+			possibleOpponentMoves := []Coord{
+				{X: snake.Head.X + 1, Y: snake.Head.Y},
+				{X: snake.Head.X - 1, Y: snake.Head.Y},
+				{X: snake.Head.X, Y: snake.Head.Y + 1},
+				{X: snake.Head.X, Y: snake.Head.Y - 1},
+			}
+
+			for _, move := range possibleOpponentMoves {
+				if move.X == headX && move.Y == headY {
+					isMoveSafe["left"] = false
+					isMoveSafe["right"] = false
+					isMoveSafe["up"] = false
+					isMoveSafe["down"] = false
+					break
+				}
+			}
+		}
+	}
+	return isMoveSafe
+}
 
 func checkBody(state GameState, body []Coord, isMoveSafe map[string]bool) map[string]bool {
 	headX := state.You.Head.X
