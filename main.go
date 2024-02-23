@@ -28,7 +28,7 @@ func info() BattlesnakeInfoResponse {
 	return BattlesnakeInfoResponse{
 		APIVersion: "1",
 		Author:     "BumbleBee", // TODO: Your Battlesnake username
-		Color:      "#eeff41",   // TODO: Choose color
+		Color:      "#9c27b0",   // TODO: Choose color
 		Head:       "bee",       // TODO: Choose head
 		Tail:       "ladybug",   // TODO: Choose tail
 	}
@@ -128,6 +128,8 @@ func move(state GameState) BattlesnakeMoveResponse {
 }
 
 func getDirection(d Coord) string {
+	log.Printf("preGetDirection%v\n", d)
+
 	switch {
 	case d.X == 0 && d.Y == 1:
 		return "up"
