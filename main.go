@@ -92,7 +92,9 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	isMoveSafe = checkBody(state, state.You.Body, isMoveSafe)
-	//isMoveSafe = checkBody(state, state.Board.Hazards, isMoveSafe)
+	if isInHazard(state.You.Head, state.Board.Hazards) {
+		isMoveSafe = checkBody(state, state.Board.Hazards, isMoveSafe)
+	}
 
 	// Are there any safe moves left?
 	safeMoves := []string{}
@@ -148,6 +150,15 @@ func getDirection(me, target Coord) string {
 	default:
 		return ""
 	}
+}
+
+func isInHazard(head Coord, hazards []Coord) bool {
+	for _, hazard := range hazards {
+		if head.X == hazard.X && head.Y == hazard.Y {
+			return true
+		}
+	}
+	return false
 }
 
 func findPath(current Coord, targets []Coord) Coord {
