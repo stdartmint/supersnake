@@ -96,38 +96,29 @@ func move(state GameState) BattlesnakeMoveResponse {
 
 	// Are there any safe moves left?
 	safeMoves := []string{}
-	for move, isSafe := range isMoveSafe {
-		if isSafe {
-			safeMoves = append(safeMoves, move)
-		}
+
+	food := state.Board.Food
+	nextMove := getDirection(state.You.Head, findPath(state.You.Head, food))
+	if nextMove == "" {
+		nextMove = safeMoves[rand.Intn(len(safeMoves))]
 	}
 
-	// TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
 	opponents := state.Board.Snakes
-
 	for _, opponent := range opponents {
 		bo := []Coord{opponent.Head}
 		bo = append(bo, opponent.Body...)
 		isMoveSafe = checkBody(state, bo, isMoveSafe)
 	}
 
+	for move, isSafe := range isMoveSafe {
+		if isSafe {
+			safeMoves = append(safeMoves, move)
+		}
+	}
+
 	if len(safeMoves) == 0 {
 		log.Printf("MOVE %d: No safe moves detected! Moving down\n", state.Turn)
 		return BattlesnakeMoveResponse{Move: "down"}
-	}
-
-	food := state.Board.Food
-
-	nextMove := "down"
-	if len(food) == 0 {
-		nextMove = safeMoves[rand.Intn(len(safeMoves))]
-		log.Printf("len(food) == 0 nextMove %s\n", nextMove)
-	} else {
-		nextMove = getDirection(state.You.Head, findPath(state.You.Head, food))
-		if nextMove == "" {
-			nextMove = safeMoves[rand.Intn(len(safeMoves))]
-		}
-		log.Printf("getDirection nextMove %s\n", nextMove)
 	}
 
 	access := false
