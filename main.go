@@ -77,11 +77,11 @@ func move(state GameState) BattlesnakeMoveResponse {
 		isMoveSafe["up"] = false
 	}
 
-	if state.You.Head.X-1 == 0 {
+	if state.You.Head.X-1 == -1 {
 		isMoveSafe["left"] = false
 	} else if state.You.Head.X+1 == boardWidth {
 		isMoveSafe["right"] = false
-	} else if state.You.Head.Y-1 == 0 { // Neck is below head, don't move down
+	} else if state.You.Head.Y-1 == -1 { // Neck is below head, don't move down
 		isMoveSafe["down"] = false
 	} else if state.You.Head.Y+1 == boardHeight { // Neck is above head, don't move up
 		isMoveSafe["up"] = false
