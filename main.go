@@ -16,7 +16,6 @@ import (
 	"log"
 	"math"
 	"math/rand"
-	"slices"
 )
 
 // info is called when you create your Battlesnake on play.battlesnake.com
@@ -112,35 +111,41 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	// TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-	//food := state.Board.Food
+	food := state.Board.Food
 
-	//nextMove := "down"
-	//if len(food) == 0 {
-	nextMove := safeMoves[rand.Intn(len(safeMoves))]
-	log.Printf("len(food) == 0 nextMove %s\n", nextMove)
-	//} else {
-	//	nextMove = getDirection(findPath(state.You.Head, food))
-	//	log.Printf("getDirection nextMove %s\n", nextMove)
-	//}
+	nextMove := "down"
+	if len(food) == 0 {
+		nextMove = safeMoves[rand.Intn(len(safeMoves))]
+		log.Printf("len(food) == 0 nextMove %s\n", nextMove)
+	} else {
+		nextMove = getDirection(state.You.Head, findPath(state.You.Head, food))
+		if nextMove == "" {
+			nextMove = safeMoves[rand.Intn(len(safeMoves))]
+		}
+		log.Printf("getDirection nextMove %s\n", nextMove)
+	}
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
 	return BattlesnakeMoveResponse{Move: nextMove}
 }
 
-func getDirection(d Coord) string {
-	log.Printf("preGetDirection%v\n", d)
+func getDirection(me, target Coord) string {
+	log.Printf("preGetDirection%v\n", target)
+
+	dx := target.X - me.X
+	dy := target.Y - me.Y
 
 	switch {
-	case d.X == 0 && d.Y == 1:
+	case dx == 0 && dy < 0:
 		return "up"
-	case d.X == 0 && d.Y == -1:
+	case dx == 0 && dy > 0:
 		return "down"
-	case d.X == -1 && d.Y == 0:
+	case dx < 0 && dy == 0:
 		return "left"
-	case d.X == 1 && d.Y == 0:
+	case dx > 0 && dy == 0:
 		return "right"
 	default:
-		return "down" // Вернуть пустое направление в случае неверных координат
+		return ""
 	}
 }
 
@@ -161,28 +166,50 @@ func findPath(current Coord, targets []Coord) Coord {
 	return closest
 }
 
+//func checkBody(state GameState, body []Coord, isMoveSafe map[string]bool) map[string]bool {
+//	// TODO: Step 2 - Prevent your Battlesnake from colliding with itself
+//	mybodyX := []int{}
+//	mybodyY := []int{}
+//
+//	for _, bodyPart := range body {
+//		mybodyX = append(mybodyX, bodyPart.X)
+//		mybodyY = append(mybodyY, bodyPart.Y)
+//	}
+//
+//	for move := range isMoveSafe {
+//		if move == "left" && slices.Contains(mybodyX, state.You.Head.X-1) {
+//			isMoveSafe[move] = false
+//		}
+//		if move == "right" && slices.Contains(mybodyX, state.You.Head.X+1) {
+//			isMoveSafe[move] = false
+//		}
+//		if move == "up" && slices.Contains(mybodyY, state.You.Head.Y+1) {
+//			isMoveSafe[move] = false
+//		}
+//		if move == "down" && slices.Contains(mybodyY, state.You.Head.Y-1) {
+//			isMoveSafe[move] = false
+//		}
+//	}
+//
+//	return isMoveSafe
+//}
+
 func checkBody(state GameState, body []Coord, isMoveSafe map[string]bool) map[string]bool {
-	// TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-	mybodyX := []int{}
-	mybodyY := []int{}
+	headX := state.You.Head.X
+	headY := state.You.Head.Y
 
-	for _, bodyPart := range body {
-		mybodyX = append(mybodyX, bodyPart.X)
-		mybodyY = append(mybodyY, bodyPart.Y)
-	}
-
-	for move := range isMoveSafe {
-		if move == "left" && slices.Contains(mybodyX, state.You.Head.X-1) {
-			isMoveSafe[move] = false
+	for _, part := range body {
+		if part.X == headX-1 && part.Y == headY {
+			isMoveSafe["left"] = false
 		}
-		if move == "right" && slices.Contains(mybodyX, state.You.Head.X+1) {
-			isMoveSafe[move] = false
+		if part.X == headX+1 && part.Y == headY {
+			isMoveSafe["right"] = false
 		}
-		if move == "up" && slices.Contains(mybodyY, state.You.Head.Y+1) {
-			isMoveSafe[move] = false
+		if part.Y == headY-1 && part.X == headX {
+			isMoveSafe["down"] = false
 		}
-		if move == "down" && slices.Contains(mybodyY, state.You.Head.Y-1) {
-			isMoveSafe[move] = false
+		if part.Y == headY+1 && part.X == headX {
+			isMoveSafe["up"] = false
 		}
 	}
 
