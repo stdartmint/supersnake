@@ -92,6 +92,7 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	isMoveSafe = checkBody(state, state.You.Body, isMoveSafe)
+	isMoveSafe = checkBody(state, state.Board.Hazards, isMoveSafe)
 
 	// Are there any safe moves left?
 	safeMoves := []string{}
