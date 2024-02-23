@@ -64,7 +64,6 @@ func move(state GameState) BattlesnakeMoveResponse {
 	boardWidth := state.Board.Width
 	boardHeight := state.Board.Height
 	log.Printf("MOVE %d: No safe moves detected! Moving down\n", state.Turn)
-	log.Printf("bw: %d, bh: %d\n", boardWidth, boardHeight)
 
 	if myNeck.X < myHead.X { // Neck is left of head, don't move left
 		isMoveSafe["left"] = false
@@ -97,18 +96,15 @@ func move(state GameState) BattlesnakeMoveResponse {
 	// Are there any safe moves left?
 	safeMoves := []string{}
 
-	food := state.Board.Food
-	nextMove := getDirection(state.You.Head, findPath(state.You.Head, food))
-	if nextMove == "" {
-		nextMove = safeMoves[rand.Intn(len(safeMoves))]
-	}
-
 	opponents := state.Board.Snakes
 	for _, opponent := range opponents {
 		bo := []Coord{opponent.Head}
 		bo = append(bo, opponent.Body...)
 		isMoveSafe = checkBody(state, bo, isMoveSafe)
 	}
+
+	food := state.Board.Food
+	nextMove := getDirection(state.You.Head, findPath(state.You.Head, food))
 
 	for move, isSafe := range isMoveSafe {
 		if isSafe {
