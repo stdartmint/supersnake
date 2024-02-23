@@ -117,8 +117,10 @@ func move(state GameState) BattlesnakeMoveResponse {
 	nextMove := "down"
 	if len(food) == 0 {
 		nextMove = safeMoves[rand.Intn(len(safeMoves))]
+		log.Printf("len(food) == 0 nextMove %s\n", nextMove)
 	} else {
 		nextMove = getDirection(findPath(state.You.Head, food))
+		log.Printf("getDirection nextMove %s\n", nextMove)
 	}
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
@@ -151,6 +153,8 @@ func findPath(current Coord, targets []Coord) Coord {
 			closest = target
 		}
 	}
+
+	log.Printf("findPath %v\n", closest)
 
 	return closest
 }
