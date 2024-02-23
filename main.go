@@ -16,6 +16,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"slices"
 )
 
 // info is called when you create your Battlesnake on play.battlesnake.com
@@ -115,7 +116,6 @@ func move(state GameState) BattlesnakeMoveResponse {
 		return BattlesnakeMoveResponse{Move: "down"}
 	}
 
-	// TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
 	food := state.Board.Food
 
 	nextMove := "down"
@@ -128,6 +128,14 @@ func move(state GameState) BattlesnakeMoveResponse {
 			nextMove = safeMoves[rand.Intn(len(safeMoves))]
 		}
 		log.Printf("getDirection nextMove %s\n", nextMove)
+	}
+
+	access := false
+	for !access {
+		if !slices.Contains(safeMoves, nextMove) {
+			nextMove = safeMoves[rand.Intn(len(safeMoves))]
+		}
+		access = true
 	}
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
