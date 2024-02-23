@@ -92,7 +92,7 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	isMoveSafe = checkBody(state, state.You.Body, isMoveSafe)
-	if isInHazard(state.You.Head, state.Board.Hazards) {
+	if !isInHazard(state.You.Head, state.Board.Hazards) {
 		isMoveSafe = checkBody(state, state.Board.Hazards, isMoveSafe)
 	}
 
