@@ -107,7 +107,7 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	food := state.Board.Food
-	nextMove := getDirection(state.You.Head, findPath(state.You.Head, food))
+	nextMove := getDirection(state.You.Head, findFood(state.You.Head, food))
 
 	for move, isSafe := range isMoveSafe {
 		if isSafe {
@@ -161,19 +161,21 @@ func isInHazard(head Coord, hazards []Coord) bool {
 	return false
 }
 
-func findPath(current Coord, targets []Coord) Coord {
-	minDist := math.Inf(1)
+func findFood(current Coord, targets []Coord) Coord {
+	position := current
+	var lowestDistance float64 = -1
 	var closest Coord
 
-	for _, target := range targets {
-		dist := math.Sqrt(math.Pow(float64(target.X-current.X), 2) + math.Pow(float64(target.Y-current.Y), 2))
-		if dist < minDist {
-			minDist = dist
-			closest = target
+	for _, food := range targets {
+		distY := position.Y - food.Y
+		distX := position.X - food.X
+		distance := math.Sqrt(math.Pow(float64(distY), 2) * math.Pow(float64(distX), 2))
+
+		if distance < lowestDistance || lowestDistance == -1 {
+			lowestDistance = distance
+			closest = food
 		}
 	}
-
-	log.Printf("findPath %v\n", closest)
 
 	return closest
 }
