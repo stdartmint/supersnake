@@ -28,7 +28,7 @@ func info() BattlesnakeInfoResponse {
 	return BattlesnakeInfoResponse{
 		APIVersion: "1",
 		Author:     "BumbleBee", // TODO: Your Battlesnake username
-		Color:      "#9c27b0",   // TODO: Choose color
+		Color:      "#eeff41",   // TODO: Choose color
 		Head:       "bee",       // TODO: Choose head
 		Tail:       "ladybug",   // TODO: Choose tail
 	}
@@ -112,16 +112,16 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	// TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-	food := state.Board.Food
+	//food := state.Board.Food
 
-	nextMove := "down"
-	if len(food) == 0 {
-		nextMove = safeMoves[rand.Intn(len(safeMoves))]
-		log.Printf("len(food) == 0 nextMove %s\n", nextMove)
-	} else {
-		nextMove = getDirection(findPath(state.You.Head, food))
-		log.Printf("getDirection nextMove %s\n", nextMove)
-	}
+	//nextMove := "down"
+	//if len(food) == 0 {
+	nextMove := safeMoves[rand.Intn(len(safeMoves))]
+	log.Printf("len(food) == 0 nextMove %s\n", nextMove)
+	//} else {
+	//	nextMove = getDirection(findPath(state.You.Head, food))
+	//	log.Printf("getDirection nextMove %s\n", nextMove)
+	//}
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
 	return BattlesnakeMoveResponse{Move: nextMove}
